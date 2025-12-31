@@ -159,10 +159,59 @@ After connecting, providing the previous password returned the next one.
 
 This tied together networking and encrypted communication.
 
+##Level 15 → 16 – Finding the Right Secure Port
+
+Multiple services were running locally, but only one accepted the correct password over an SSL connection. The challenge was identifying which port was actually relevant instead of guessing.
+
+Commands used:
+nmap localhost -p 30000-31000
+openssl s_client -connect localhost:<port>
+
+By systematically testing each open SSL port with the previous password, the correct service returned the next credential. This reinforced structured enumeration instead of trial-and-error.
+
+##Level 16 → 17 – SSH Key Extraction via Secure Service
+
+Instead of a password, the correct SSL service returned an SSH private key. This key was required to authenticate to the next level.
+
+Commands used:
+openssl s_client -connect localhost:<correct_port>
+(copy SSH private key)
+ssh -i bandit17_key bandit17@bandit.labs.overthewire.org -p 2220
+
+This demonstrated how credentials are not always passwords and how key-based authentication is commonly used in secure systems.
+
+##Level 17 → 18 – Comparing Files for Integrity
+
+Two files contained mostly identical data, with only one differing line. The task was to identify the single difference.
+
+Command used:
+diff passwords.old passwords.new
+
+This showed how file comparison tools can quickly identify meaningful changes, a common task in configuration management and security auditing.
+
+##Level 18 → 19 – Dealing With Restricted Shell Behavior
+
+Logging into this level immediately logged the user out due to shell restrictions. To work around this, a command had to be executed directly during login.
+
+Command used:
+ssh bandit18@bandit.labs.overthewire.org -p 2220 cat readme
+
+This highlighted how restricted shells operate and how command execution can be allowed even when interactive access is blocked.
+
+##Level 19 → 20 – Leveraging SetUID Binaries
+
+A binary with the SetUID bit set was provided, allowing execution with another user’s privileges. Running this binary correctly revealed the password for the next level.
+
+Command used:
+./bandit20-do cat /etc/bandit_pass/bandit20
+
+This level introduced privilege escalation concepts and showed how misconfigured binaries can expose sensitive data.
+
 The above given details are my understanding about the tasks i did in bandit. 
 will continue to work upon it.
 
 Below is my Current Status:-
 
-Completed: Levels 0–15
-In Progress: Levels 16–20
+Completed: Levels 0–20
+
+In Progress: Levels 20–25
